@@ -1,6 +1,8 @@
 gradle-taskdepends-plugin
 =========================
 
+Display the dependency trees of each project's tasks.
+
 ### Usage example
 
 create `build.gradle`:
