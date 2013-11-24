@@ -1,7 +1,7 @@
 gradle-taskdepends-plugin
 =========================
 
-Display the dependency trees of each project's tasks.
+Display the ascii dependency trees of your project's each tasks.
 
 ### Usage example
 
