@@ -14,7 +14,7 @@ create `build.gradle`:
             }
         }
         dependencies {
-            classpath group: 'org.gradle.help', name: 'gradle-taskdepends-plugin', version: '1.0'
+            classpath 'org.gradle.help:gradle-taskdepends-plugin:1.0'
         }
     }
     apply plugin: 'taskdepends'
