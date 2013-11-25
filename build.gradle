@@ -16,12 +16,14 @@ dependencies {
 }
 
 group = 'org.gradle.help'
-version = '1.0-SNAPSHOT'
+version = '1.01'
 
 uploadArchives {
     repositories {
         mavenDeployer {
-            repository(url: uri('./repo'))
+            def defaultDeployTo = "${System.getenv('HOME')}/Dropbox/Public/maven-repository"
+            def deployTo = project.getProperties().get('deployTo', defaultDeployTo)
+            repository(url: uri(deployTo))
         }
     }
 }

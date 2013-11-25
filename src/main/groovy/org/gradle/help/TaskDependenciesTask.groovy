@@ -5,22 +5,41 @@ import org.gradle.api.tasks.TaskAction
 
 class TaskDependenciesTask extends DefaultTask {
     {
-        description = 'Display dependencies of the tasks from project.getTasks()'
+        description = "Display dependencies of your project's each taskss"
     }
+
+    def int count
+
     @TaskAction
-    def show() {
+    public void show() {
         project.getTasks().each { task ->
+            if (project.taskdepends.showRootTaskNames) {
+                if (!project.taskdepends.showRootTaskNames.contains(task.getName())) {
+                    return
+                }
+            }
             println ""
+            count = 0;
             printDepends(task)
         }
     }
 
-    void printDepends(task, String indent = "", int depth = 0, boolean islast = false) { 
+    public void printDepends(task, String indent = "", int depth = 0, boolean islast = false) {
+        count = count + 1
+        if (project.taskdepends.maxLine < count) {
+            return
+        }
+        if (project.taskdepends.maxDepth < depth) {
+            return
+        }
         if (!task) {
             return
         }
         if (task.metaClass.respondsTo(task, "getName")) {
             if (task.getName() == "buildDependents") {
+                return
+            }
+            if (project.taskdepends.ignoreTaskNames.contains(task.getName())) {
                 return
             }
         }
