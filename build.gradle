@@ -1,34 +1,41 @@
-apply plugin: 'groovy'
 
-dependencies {
-    compile gradleApi()
-    compile localGroovy()
+buildscript {
+    // repositories {
+    //     maven {
+    //         url 'https://github.com/ts123/maven-repository/raw/master'
+    //     }
+    // }
+    // dependencies {
+    //     classpath 'org.gradle.help:gradle-taskdepends-plugin:1.01'
+    // }
+}
+apply plugin: 'taskdepends'
+apply plugin: 'java'
+
+sourceSets {
 }
 
-apply plugin: 'maven'
-
-repositories {
-    mavenCentral()
+taskdepends {
+    // showRootTaskNames = ['assemble']
+    // showDetail = true
 }
 
-dependencies {
-    testCompile 'junit:junit:4.11'
+task deploy(type: GradleBuild) {
+    buildFile = 'buildSrc/build.gradle'
+    tasks = ['uploadArchives']
+    startParameter.projectProperties = [version: '1.02']
 }
 
-group = 'org.gradle.help'
-version = '1.01'
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            def defaultDeployTo = "${System.getenv('HOME')}/Dropbox/Public/maven-repository"
-            def deployTo = project.getProperties().get('deployTo', defaultDeployTo)
-            repository(url: uri(deployTo))
-        }
-    }
+task cleanAll(type: GradleBuild, dependsOn: clean) {
+    buildFile = 'buildSrc/build.gradle'
+    tasks = ['clean']
 }
 
 task wrapper(type: Wrapper) {
     gradleVersion = '1.8'
 }
+
+
+defaultTasks 'taskDependencies'
+
 
