@@ -1,29 +1,34 @@
 
 buildscript {
-    // repositories {
-    //     maven {
-    //         url 'https://github.com/ts123/maven-repository/raw/master'
-    //     }
-    // }
-    // dependencies {
-    //     classpath 'org.gradle.help:gradle-taskdepends-plugin:1.01'
-    // }
+    repositories {
+    }
+    dependencies {
+    }
 }
+
+ext {
+    version = '1.02'
+}
+
 apply plugin: 'taskdepends'
 apply plugin: 'java'
 
-sourceSets {
-}
-
 taskdepends {
-    // showRootTaskNames = ['assemble']
-    // showDetail = true
+    // maxDepth = 20
+    // maxLine = 4000
+    // ignoreTaskNames = ['compileJava', 'processResources']
+    showRootTaskNames = ['assemble']
+    showDetail = true
 }
 
 task deploy(type: GradleBuild) {
     buildFile = 'buildSrc/build.gradle'
     tasks = ['uploadArchives']
-    startParameter.projectProperties = [version: '1.02']
+    def ps = [version: version]
+    if (project.hasProperty('deployTo')) {
+        ps << [deployTo: project.deployTo]
+    }
+    startParameter.projectProperties = ps 
 }
 
 task cleanAll(type: GradleBuild, dependsOn: clean) {
@@ -34,7 +39,6 @@ task cleanAll(type: GradleBuild, dependsOn: clean) {
 task wrapper(type: Wrapper) {
     gradleVersion = '1.8'
 }
-
 
 defaultTasks 'taskDependencies'
 
