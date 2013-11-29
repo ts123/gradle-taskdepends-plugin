@@ -6,9 +6,7 @@ buildscript {
     }
 }
 
-ext {
-    version = '1.02'
-}
+version = '1.02'
 
 apply plugin: 'taskdepends'
 apply plugin: 'java'
