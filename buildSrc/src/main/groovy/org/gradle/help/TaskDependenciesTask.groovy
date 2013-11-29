@@ -19,17 +19,44 @@ class TaskDependenciesTask extends DefaultTask {
     }
 
     int count = 0
+    String rootTaskName
     private boolean DEBUG = false
-    private boolean detail = false
+    boolean detail = false
+    final String sep = ','
 
     @CommandLineOption(options = "all", description = "Show tasks and files.")
     public void setShowDetail(boolean detail) {
-        this.detail = detail;
+//        this.detail = detail;
+        project.extensions.taskdepends.showDetail = detail
+    }
+    @CommandLineOption(options = "root", description = "")
+    public void setRootNames(String names) {
+        project.extensions.taskdepends.showRootTaskNames = names.split(sep);
+    }
+    @CommandLineOption(options = "rootw", description = "")
+    public void setRootWords(String names) {
+        project.extensions.taskdepends.showRootTaskWords = names.split(sep);
+    }
+    @CommandLineOption(options = "rootp", description = "")
+    public void setRootPatterns(String names) {
+        project.extensions.taskdepends.showRootTaskPattern = names.split(sep);
+    }
+    @CommandLineOption(options = "ignore", description = "")
+    public void setIgnoreNames(String names) {
+        project.extensions.taskdepends.ignoreTaskNames = names.split(sep);
+    }
+    @CommandLineOption(options = "ignorew", description = "")
+    public void setIgnoreWords(String names) {
+        project.extensions.taskdepends.ignoreTaskWords = names.split(sep);
+    }
+    @CommandLineOption(options = "ignorep", description = "")
+    public void setIgnorePatterns(String names) {
+        project.extensions.taskdepends.ignoreTaskPatterns = names.split(sep);
     }
 
     @TaskAction
     def show() {
-        this.detail |= project.extensions.taskdepends.showDetail
+        detail = project.extensions.taskdepends.showDetail
         project.getTasks().each { task ->
             if (project.taskdepends.showRootTaskNames) {
                 if (!project.taskdepends.showRootTaskNames.contains(task.getName())) {
@@ -58,8 +85,15 @@ class TaskDependenciesTask extends DefaultTask {
             return
         }
         if (object.metaClass.respondsTo(object, "getName")) {
-            if (project.taskdepends.ignoreTaskNames.contains(object.getName())) {
+            def name = object.getName()
+            if (project.taskdepends.ignoreTaskNames.contains(name)) {
                 return
+            }
+            for (def it : project.taskdepends.ignoreTaskWords) {
+                if (name.contains(it)) return
+            }
+            for (def it : project.taskdepends.ignoreTaskPatterns) {
+                if (name ==~ /$it/) return
             }
         }
 

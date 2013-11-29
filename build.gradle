@@ -6,7 +6,7 @@ buildscript {
     }
 }
 
-version = '1.02'
+version = '1.03'
 
 apply plugin: 'taskdepends'
 apply plugin: 'java'
@@ -15,8 +15,10 @@ taskdepends {
     // maxDepth = 20
     // maxLine = 4000
     // ignoreTaskNames = ['compileJava', 'processResources']
+    ignoreTaskWords = []
+    // ignoreTaskPatterns = ['.+Java']
     showRootTaskNames = ['assemble']
-    showDetail = true
+    // showDetail = true
 }
 
 task deploy(type: GradleBuild) {

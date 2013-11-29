@@ -5,5 +5,9 @@ class TaskDependenciesPluginExtension {
     int maxDepth = 20
     boolean showDetail = false
     String[] showRootTaskNames = []
+    String[] showRootTaskWords = []
+    String[] showRootTaskPatterns = []
     String[] ignoreTaskNames = []
+    String[] ignoreTaskWords = []
+    String[] ignoreTaskPatterns = []
 }
