@@ -58,11 +58,7 @@ class TaskDependenciesTask extends DefaultTask {
     def show() {
         detail = project.extensions.taskdepends.showDetail
         project.getTasks().each { task ->
-            if (project.taskdepends.showRootTaskNames) {
-                if (!project.taskdepends.showRootTaskNames.contains(task.getName())) {
-                    return
-                }
-            }
+            if (!isShowTask(task)) return
             println ""
             count = 0
             printTaskDependency(task)
@@ -71,31 +67,9 @@ class TaskDependenciesTask extends DefaultTask {
 
     void printTaskDependency(object, String indent = "", int depth = 0, boolean islast = true) {
         count = count + 1
-        if (project.taskdepends.maxLine < count) {
-            return
-        }
-        if (project.taskdepends.maxDepth < depth) {
-            return
-        }
-        if (!object) {
-            return
-        }
-        if (object instanceof String) {
-            // from DefaultTaskDependency#values
-            return
-        }
-        if (object.metaClass.respondsTo(object, "getName")) {
-            def name = object.getName()
-            if (project.taskdepends.ignoreTaskNames.contains(name)) {
-                return
-            }
-            for (def it : project.taskdepends.ignoreTaskWords) {
-                if (name.contains(it)) return
-            }
-            for (def it : project.taskdepends.ignoreTaskPatterns) {
-                if (name ==~ /$it/) return
-            }
-        }
+        if (project.taskdepends.maxLine < count) return
+        if (project.taskdepends.maxDepth < depth) return
+        if (!isShowObject(object)) return
 
         // print one node line
         if (!(object instanceof DefaultTaskDependency) || detail) {
@@ -171,6 +145,44 @@ class TaskDependenciesTask extends DefaultTask {
         }
     }
 
+    def isShowTask(task) {
+        def name = task.getName()
+        def a = project.taskdepends.showRootTaskNames
+        def b = project.taskdepends.showRootTaskWords
+        def c = project.taskdepends.showRootTaskPatterns
+        if (!(a || b || c)) return true
+
+        def result = []
+        result.add(a.any { name.equals(it) })
+        result.add(b.any { name.contains(it) })
+        result.add(c.any { name ==~ it })
+        return result.any()
+    }
+
+    def isShowObject(object) {
+        if (!object) {
+            return false
+        }
+        if (object instanceof String) {
+            // from DefaultTaskDependency#values
+            return false
+        }
+        if (!object.metaClass.respondsTo(object, "getName")) {
+            return true
+        }
+
+        def name = object.getName()
+        if (project.taskdepends.ignoreTaskNames.contains(name)) {
+            return false
+        }
+        for (def it : project.taskdepends.ignoreTaskWords) {
+            if (name.contains(it)) return false
+        }
+        for (def it : project.taskdepends.ignoreTaskPatterns) {
+            if (name ==~ /$it/) return false
+        }
+        return true
+    }
     def printNode(object) {
         if (object instanceof  DefaultTask) {
             if (DEBUG) print 'dtask:'
